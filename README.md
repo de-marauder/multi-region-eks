@@ -7,8 +7,9 @@ This project demonstrates how to perform multi-region deployment of kubernetes u
 - ArgoCD
 
 ## Objectives
-- [ ] Create a terraform module that encapsulates the infrasture requirements.
-  - [ ] Make use of an appropriate data structure to allow for region specific modification of the deployment.
+- [x] Create a terraform module that encapsulates the infrastructure requirements.
+  - [x] Make use of an appropriate data structure to allow for region specific modification of the deployment.
+  - [x] Make use of terragrunt to organize terraform modules deployments
 - [ ] Create relevant kubernetes manifests
   - [ ] For Argo CD control plane
   - [ ] For deployed infrastructure
