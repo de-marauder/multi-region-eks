@@ -1,9 +1,8 @@
 module "gitops-control-plane" {
   source = "../eks-cluster"
 
-  region                     = var.region
-  bastion_security_group_ids = []
-  # cluster_public = true
+  region = var.region
+
   vpc_cidr             = var.vpc_cidr
   public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs

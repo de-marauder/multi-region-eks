@@ -1,5 +1,9 @@
+include "root" {
+  path = "${find_in_parent_folders()}"
+}
+
 include "env" {
-  path   = "${get_parent_terragrunt_dir()}/../../../_env/gitops-cluster.development.hcl"
+  path   = "${get_parent_terragrunt_dir()}/../../../_env/gitops-cluster.hcl"
   expose = true
 }
 

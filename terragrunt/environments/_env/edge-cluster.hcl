@@ -1,22 +1,15 @@
 locals {
-  env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
-  env_name = "development"
-  region   = "${local.env_vars.locals.region}"
+  environment_var = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  region_var      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
 
-  source_base_url = "${get_original_terragrunt_dir()}/../../../../modules//eks-cluster"
+  env_name = "${local.environment_var.locals.environment}"
+  region   = "${local.region_var.locals.region}"
+
+  source_base_url = "${get_original_terragrunt_dir()}/../../../../../modules//eks-cluster"
 }
-
-dependency "iam" {
-  config_path = "${get_original_terragrunt_dir()}/../../../shared/iam"
-}
-
-dependency "iam" {
-  config_path = "${get_original_terragrunt_dir()}/../../../shared/gitops-cluster"
-}
-
 
 generate "provider" {
-  path      = "provider.tf"
+  path      = "${local.region}_provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
     provider "aws" {
@@ -25,10 +18,17 @@ generate "provider" {
     EOF
 }
 
+dependency "iam" {
+  config_path = "${get_original_terragrunt_dir()}/../../../shared/iam"
+}
+
+dependency "gitops-cluster" {
+  config_path = "${get_original_terragrunt_dir()}/../../../shared/gitops-cluster"
+  // skip_outputs = true
+}
+
 inputs = {
   region = "${local.region}"
-
-  # cluster_public = true
 
   vpc_cidr             = "10.10.0.0/16"
   public_subnet_cidrs  = ["10.10.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]

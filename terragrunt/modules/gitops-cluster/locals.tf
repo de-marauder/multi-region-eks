@@ -3,7 +3,7 @@ locals {
   cluster_name = "${var.project_name}-${var.region}"
 
   tags = {
-    Environment = var.tags.Environment
+    Environment = "${var.tags.Environment}"
     Terraform   = true
   }
 }

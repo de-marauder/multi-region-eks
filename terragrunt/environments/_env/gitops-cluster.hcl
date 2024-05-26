@@ -1,9 +1,10 @@
 locals {
-  // env_vars = read_terragrunt_config(find_in_parent_folders("../env.hcl"))
-  env_name = "development"
-  // region   = "${local.env_vars.locals.region}"
+  environment_var = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-  source_base_url = "${get_parent_terragrunt_dir()}/../../../modules//gitops-cluster"
+  env_name = "${local.environment_var.locals.environment}"
+  region = "${local.environment_var.locals.default_region}"
+
+  source_base_url = "${get_parent_terragrunt_dir()}/../../modules//gitops-cluster"
 }
 
 dependency "iam" {

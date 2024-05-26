@@ -33,3 +33,15 @@ output "cluster_arn" {
 output "vpc_cidr" {
   value = module.gitops-control-plane.vpc_cidr
 }
+
+output "region" {
+  value = var.region
+}
+
+output "private_route_table_ids" {
+  value = module.gitops-control-plane.private_route_table_ids
+}
+
+output "public_route_table_ids" {
+  value = module.gitops-control-plane.public_route_table_ids
+}

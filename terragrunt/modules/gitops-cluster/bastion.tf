@@ -45,7 +45,7 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  depends_on = [ module.gitops-control-plane ]
+  depends_on = [module.gitops-control-plane]
 }
 
 # Ubuntu AMI data source
@@ -77,11 +77,10 @@ resource "aws_instance" "bastion_instance" {
   user_data = <<EOF
 #!/bin/bash
 
+# Install Dependencies
 sudo apt-get update
-# apt-transport-https may be a dummy package; if so, you can skip that package
-sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo apt-get install -y apt-transport-https ca-certificates curl unzip
 
-# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
 sudo mkdir -p -m 755 /etc/apt/keyrings
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v${module.gitops-control-plane.cluster_version}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
@@ -90,6 +89,7 @@ sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${module.gitops-control-plane.cluster_version}/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
 
+# Install Kubectl
 sudo apt-get update
 sudo apt-get install -y kubectl
 
@@ -99,7 +99,7 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # Print the kubectl version for reference
-echo "kubectl version: $(kubectl version --client-version)"
+echo "kubectl version: $(kubectl version)"
 
 EOF
 
@@ -111,6 +111,10 @@ EOF
     local.tags
   )
 
-  depends_on = [ module.gitops-control-plane ]
+  lifecycle {
+    ignore_changes = [
+      security_groups,
+    ]
+  }
 }
 
