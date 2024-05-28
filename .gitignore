@@ -1,0 +1,35 @@
+# Ignore temporary files created by Terraform
+*.tfstate
+*.tfstate.backup
+*.tfplan
+
+# Ignore local development configuration
+.terraformrc
+terraform.rc
+
+# Ignore logs, cache, state and modules
+*.log
+.terraform*
+.terragrunt*
+.terraform/cache*
+
+# Ignore vendor directories (if using modules)
+vendor/
+
+# Ignore environment specific variables
+*.tfvars
+*.tfvars.local
+
+# Ignore test data (if applicable)
+tests/data/*
+
+# Ignore coverage reports (if applicable)
+coverage.txt
+
+# Ignore IDE specific files
+.idea/*
+.vscode/*
+
+# Ignore common OS generated files
+.DS_Store
+Thumbs.db
