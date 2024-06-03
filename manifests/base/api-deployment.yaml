@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gen-algo-api
+  namespace: gen-algo
+  labels:
+    app: gen-algo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gen-algo-api
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update" # update secret in pods dynamically without pod restart
+        vault.hashicorp.com/role: "gen-algo-api-role"
+        vault.hashicorp.com/agent-inject-secret-env: "secret/data/api/env"
+        vault.hashicorp.com/agent-inject-file-env: ".env"
+        vault.hashicorp.com/agent-inject-template-env: |
+          {{- with secret "secret/api/env" -}}
+          DB_URL={{ .Data.data.DB_URL }}
+          JWT_SECRET={{ .Data.data.JWT_SECRET }}
+          RUN_NOTIFICATION_LINK={{ .Data.data.RUN_NOTIFICATION_LINK }}
+          {{- end }}
+      labels:
+        app: gen-algo-api
+    spec:
+      serviceAccountName: gen-algo-sa
+      containers:
+        - name: backend
+          image: demarauder/gen-algo-api:latest-main
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /vault/secrets/.env /app/.env
+              node /app/build/server.js
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: docker-regcred # created manually

@@ -33,3 +33,5 @@ coverage.txt
 # Ignore common OS generated files
 .DS_Store
 Thumbs.db
+
+.ignore*

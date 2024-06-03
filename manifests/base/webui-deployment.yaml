@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gen-algo-webui
+  namespace: gen-algo
+  labels:
+    app: gen-algo-webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gen-algo-webui
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/role: "gen-algo-webui-role"
+        vault.hashicorp.com/agent-inject-secret-env: "secret/data/webui/env-local"
+        vault.hashicorp.com/agent-inject-file-env: ".env.local"
+        vault.hashicorp.com/agent-inject-template-env: |
+          {{- with secret "secret/webui/env-local" -}}
+          NEXT_PUBLIC_API_URL={{ .Data.data.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_FCM_API_KEY={{ .Data.data.NEXT_PUBLIC_FCM_API_KEY }}
+          NEXT_PUBLIC_FCM_AUTH_DOMAIN={{ .Data.data.NEXT_PUBLIC_FCM_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FCM_PROJECT_ID={{ .Data.data.NEXT_PUBLIC_FCM_PROJECT_ID }}
+          NEXT_PUBLIC_FCM_STRORAGE_BUCKET={{ .Data.data.NEXT_PUBLIC_FCM_STRORAGE_BUCKET }}
+          NEXT_PUBLIC_FCM_MESSAGING_SENDER={{ .Data.data.NEXT_PUBLIC_FCM_MESSAGING_SENDER }}
+          NEXT_PUBLIC_FCM_APP_ID={{ .Data.data.NEXT_PUBLIC_FCM_APP_ID }}
+          NEXT_PUBLIC_FCM_VAPID_KEY={{ .Data.data.NEXT_PUBLIC_FCM_VAPID_KEY }}
+          {{- end }}
+      labels:
+        app: gen-algo-webui
+    spec:
+      serviceAccountName: gen-algo-sa
+      containers:
+        - name: frontend
+          image: demarauder/gen-algo-webui:latest-main
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cat /vault/secrets/.env.local > /app/.env.local
+              node /app/server.js
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: docker-regcred  # created manually

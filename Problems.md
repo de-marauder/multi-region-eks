@@ -86,3 +86,8 @@
 4. **VPC Peering**:
    - VPC peering across regions requires you to set up a requester and accepter peer connection across relevant regions. After that you need to set up routing rules to allow access to the different subnets in the VPCs via the peer connection setup.
    - All VPC peers must have unique cidr ranges for routing to function properly.
+
+## ArgoCD Setup
+
+1. **Handling secrets:** The gitops workflow emphasizes the using a version control tool such as git as the single source of truth but due to obvious reasons, we can't store our application secrets in these repos. <br>
+   **Solution**: We are making use of hashicorp vault with consul as it's storage backend. This will allow us inject our secrets into our pods securely within the cluster. The native kubernetes secrets are not enough because the can basically be decoded by anyone.

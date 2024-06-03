@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gen-algo-api
+spec:
+  selector:
+    matchLabels:
+      app: gen-algo-api
+  template:
+    spec:
+        containers:
+          - name: backend
+            image: demarauder/gen-algo-api:latest-main
+            resources:
+              limits:
+                memory: "128Mi"
+                cpu: "500m"

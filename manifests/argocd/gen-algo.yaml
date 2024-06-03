@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gen-algo-api-dev-us-east-1
+  namespace: gen-algo
+spec:
+  project: gen-algo-dev
+  source:
+    repoURL: "https://github.com/de-marauder/multi-region-eks.git"
+    targetRevision: HEAD
+    path: manifests/overlays/development/us-east-1
+  destination:
+    server: "https://kubernetes.default.svc"
+  namespace: gen-algo-api-dev-us-east-1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

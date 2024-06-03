@@ -1,0 +1,7 @@
+resources:
+  - namespace.yaml
+  - serviceAccount.yaml
+  - api-service.yaml
+  - api-deployment.yaml
+  - webui-service.yaml
+  - webui-deployment.yaml
