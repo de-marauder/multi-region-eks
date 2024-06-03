@@ -11,7 +11,7 @@ spec:
     path: manifests/overlays/development/us-east-1
   destination:
     server: "https://kubernetes.default.svc"
-  namespace: gen-algo-api-dev-us-east-1
+    namespace: gen-algo-api-dev-us-east-1
   syncPolicy:
     automated:
       prune: true
