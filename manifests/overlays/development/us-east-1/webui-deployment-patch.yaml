@@ -4,13 +4,14 @@ metadata:
   name: gen-algo-webui
   namespace: gen-algo
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: gen-algo-webui
   template:
     spec:
         containers:
-          - name: backend
+          - name: frontend
             image: demarauder/gen-algo-webui:latest-main
             resources:
               limits:
