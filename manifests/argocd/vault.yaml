@@ -1,23 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vault
-  namespace: gen-algo
+  name: vault-dev-us-east-1
+  namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: "https://github.com/de-marauder/multi-region-eks.git"
-    targetRevision: HEAD
-    path: hashicorp/vault
-    helm:
-      valueFiles:
-        - manifests/helm/dev/vault-values.yaml
+  sources:
+    - repoURL: "https://helm.releases.hashicorp.com"
+      chart: vault
+      targetRevision: 0.28.0
+      helm:
+        valueFiles:
+          - $values/manifests/helm/dev/vault-values.yaml
+    - repoURL: "https://github.com/de-marauder/multi-region-eks"
+      targetRevision: HEAD
+      ref: values
   destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: vault
+    server: "https://kubernetes.default.svc"
+    namespace: gen-algo
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true

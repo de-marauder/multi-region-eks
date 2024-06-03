@@ -2,16 +2,19 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: gen-algo-api-dev-us-east-1
-  namespace: gen-algo
+  namespace: argocd
+  # Add for cascading deletions (delete app deletes all resources in it)
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
 spec:
-  project: gen-algo-dev
+  project: default
   source:
-    repoURL: "https://github.com/de-marauder/multi-region-eks.git"
+    repoURL: "https://github.com/de-marauder/multi-region-eks"
     targetRevision: HEAD
     path: manifests/overlays/development/us-east-1
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: gen-algo-api-dev-us-east-1
+    namespace: gen-algo
   syncPolicy:
     automated:
       prune: true
