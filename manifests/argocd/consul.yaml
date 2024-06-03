@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: consul
+  namespace: gen-algo
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/your-repo/multi-region-deployment'
+    targetRevision: HEAD
+    path: hashicorp/consul
+    helm:
+      valueFiles:
+        - manifests/helm/dev/consul-values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

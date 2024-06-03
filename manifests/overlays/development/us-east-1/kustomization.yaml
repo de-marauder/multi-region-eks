@@ -1,0 +1,5 @@
+bases:
+  - ../../../base
+patchesStrategicMerge:
+  - api-deployment-patch.yaml
+  - webui-deployment-patch.yaml
