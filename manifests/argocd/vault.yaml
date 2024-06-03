@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/your-repo/multi-region-deployment'
+    repoURL: "https://github.com/de-marauder/multi-region-eks.git"
     targetRevision: HEAD
     path: hashicorp/vault
     helm:
