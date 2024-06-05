@@ -93,8 +93,22 @@
    **Solution**: We are making use of hashicorp vault with consul as it's storage backend. This will allow us inject our secrets into our pods securely within the cluster. The native kubernetes secrets are not enough because the can basically be decoded by anyone.
 
 2. **Passing docker credentials for image pulling using vault**: Not all images are publicly available. Credentials are required to access some of them. These credetials need to be managed as secrets preferrably by vault. Supplying docker credentials using native kubernetes secrets is pretty straightforward but like we found in the previous point, kubernetes secrets are not secure. They only encode a value and do not encrypt. Those values can be decoded by anyone. <br>
-   **Solution:** <-pending>
+   **Solution:** <-pending> using kubernetes secrets for now.
 
 3. **Adding Helm charts with custom values:**<br>
    **Solution:** The argo Application manifest accepts a `spec.sources` field which can be used to supply external sources for helm values
    > https://argo-cd.readthedocs.io/en/stable/user-guide/multiple_sources/#helm-value-files-from-external-git-repository
+
+4. **Vault not syncing**: 
+   - Vault server pods failing readiness checks.
+     > **Solution** - Vault servers need to be initialized and unsealed to pass readiness checks
+   - The `MutatingWebhookConfiguration` kept keeping the vault applications out of sync.
+     > **Solution** - We need to tell argocd to ingore the drift in this particular manifest. [source](https://github.com/argoproj/argo-cd/issues/4326#issuecomment-1045107563)
+     ```yaml
+     spec:
+     ignoreDifferences:
+     - group: admissionregistration.k8s.io
+     kind: MutatingWebhookConfiguration
+     jqPathExpressions:
+     - .webhooks[]?.clientConfig.caBundle
+     ```
