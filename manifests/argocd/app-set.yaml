@@ -1,0 +1,134 @@
+# Configuration to deploy application to multiple clusters across multiple regions and environments
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gen-algo
+  namespace: argocd
+  # Add for cascading deletions (delete app deletes all resources in it)
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/de-marauder/multi-region-eks.git
+        revision: HEAD
+        directories:
+          - path: "manifests/overlays/development/*"
+        values:
+          environment: "{{ index .path.segments 2 }}"
+  template:
+    metadata:
+      name: gen-algo-{{ .values.environment }}-{{ .path.basename }}
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: "https://github.com/de-marauder/multi-region-eks"
+        targetRevision: HEAD
+        path: "{{ .path.path }}"
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: "{{ .values.environment }}-gen-algo"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: consul
+  namespace: argocd
+  # Add for cascading deletions (delete app deletes all resources in it)
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/de-marauder/multi-region-eks.git
+        revision: HEAD
+        directories:
+          - path: "manifests/overlays/development/*"
+        values:
+          environment: "{{ index .path.segments 2 }}"
+  template:
+    metadata:
+      name: consul-{{ .values.environment }}-{{ .path.basename }}
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        - repoURL: "https://helm.releases.hashicorp.com"
+          chart: consul
+          targetRevision: 1.4.3
+          helm:
+            valueFiles:
+              - $values/manifests/helm/dev/consul-values.yaml
+        - repoURL: "https://github.com/de-marauder/multi-region-eks"
+          targetRevision: HEAD
+          ref: values
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: "{{ .values.environment }}-gen-algo"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: vault
+  namespace: argocd
+  # Add for cascading deletions (delete app deletes all resources in it)
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/de-marauder/multi-region-eks.git
+        revision: HEAD
+        directories:
+          - path: "manifests/overlays/development/*"
+        values:
+          environment: "{{ index .path.segments 2 }}"
+  template:
+    metadata:
+      name: vault-{{ .values.environment }}-{{ .path.basename }}
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        - repoURL: "https://helm.releases.hashicorp.com"
+          chart: vault
+          targetRevision: 1.4.3
+          helm:
+            valueFiles:
+              - $values/manifests/helm/{{ .values.environment }}/vault-values.yaml
+        - repoURL: "https://github.com/de-marauder/multi-region-eks"
+          targetRevision: HEAD
+          ref: values
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: "{{ .values.environment }}-gen-algo"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
