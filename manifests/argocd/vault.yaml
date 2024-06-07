@@ -17,7 +17,7 @@ spec:
       ref: values
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: gen-algo
+    # namespace: gen-algo
   syncPolicy:
     automated:
       prune: true
@@ -28,4 +28,4 @@ spec:
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
       jqPathExpressions:
-      - .webhooks[]?.clientConfig.caBundle
+        - .webhooks[]?.clientConfig.caBundle

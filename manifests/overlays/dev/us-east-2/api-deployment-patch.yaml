@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gen-algo-api
-  namespace: gen-algo
+  # namespace: gen-algo
 spec:
   replicas: 1
   selector:
@@ -10,10 +10,10 @@ spec:
       app: gen-algo-api
   template:
     spec:
-        containers:
-          - name: backend
-            image: demarauder/gen-algo-api:latest-main
-            resources:
-              limits:
-                memory: "100Mi"
-                cpu: "250m"
+      containers:
+        - name: backend
+          image: demarauder/gen-algo-api:latest-main
+          resources:
+            limits:
+              memory: "100Mi"
+              cpu: "250m"

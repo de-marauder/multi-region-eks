@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gen-algo-api
-  namespace: gen-algo
+  # namespace: gen-algo
   labels:
     app: gen-algo-api
 spec:
