@@ -16,7 +16,7 @@ spec:
         repoURL: https://github.com/de-marauder/multi-region-eks.git
         revision: HEAD
         directories:
-          - path: "manifests/overlays/development/*"
+          - path: "manifests/overlays/dev/*"
         values:
           environment: "{{ index .path.segments 2 }}"
   template:
@@ -31,7 +31,7 @@ spec:
         path: "{{ .path.path }}"
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "{{ .values.environment }}-gen-algo"
+        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
       syncPolicy:
         automated:
           prune: true
@@ -57,12 +57,13 @@ spec:
         repoURL: https://github.com/de-marauder/multi-region-eks.git
         revision: HEAD
         directories:
-          - path: "manifests/overlays/development/*"
+          - path: "manifests/overlays/dev/*"
         values:
           environment: "{{ index .path.segments 2 }}"
+          region: "{{ .path.basename }}"
   template:
     metadata:
-      name: consul-{{ .values.environment }}-{{ .path.basename }}
+      name: consul-{{ .values.environment }}-{{ values.region }}
       namespace: argocd
     spec:
       project: default
@@ -78,7 +79,7 @@ spec:
           ref: values
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "{{ .values.environment }}-gen-algo"
+        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
       syncPolicy:
         automated:
           prune: true
@@ -104,7 +105,7 @@ spec:
         repoURL: https://github.com/de-marauder/multi-region-eks.git
         revision: HEAD
         directories:
-          - path: "manifests/overlays/development/*"
+          - path: "manifests/overlays/dev/*"
         values:
           environment: "{{ index .path.segments 2 }}"
   template:
@@ -116,7 +117,7 @@ spec:
       sources:
         - repoURL: "https://helm.releases.hashicorp.com"
           chart: vault
-          targetRevision: 1.4.3
+          targetRevision: 0.28.0
           helm:
             valueFiles:
               - $values/manifests/helm/{{ .values.environment }}/vault-values.yaml
@@ -125,7 +126,7 @@ spec:
           ref: values
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "{{ .values.environment }}-gen-algo"
+        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
       syncPolicy:
         automated:
           prune: true
