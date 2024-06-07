@@ -19,9 +19,10 @@ spec:
           - path: "manifests/overlays/dev/*"
         values:
           environment: "{{ index .path.segments 2 }}"
+          region: "{{ .path.basename }}"
   template:
     metadata:
-      name: gen-algo-{{ .values.environment }}-{{ .path.basename }}
+      name: gen-algo-{{ .values.environment }}-{{ .values.region }}
       namespace: argocd
     spec:
       project: default
@@ -31,7 +32,7 @@ spec:
         path: "{{ .path.path }}"
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
+        namespace: "gen-algo-{{ .values.environment }}-{{ .values.region }}"
       syncPolicy:
         automated:
           prune: true
@@ -63,7 +64,7 @@ spec:
           region: "{{ .path.basename }}"
   template:
     metadata:
-      name: consul-{{ .values.environment }}-{{ values.region }}
+      name: consul-{{ .values.environment }}-{{ .values.region }}
       namespace: argocd
     spec:
       project: default
@@ -79,7 +80,7 @@ spec:
           ref: values
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
+        namespace: "gen-algo-{{ .values.environment }}-{{ .values.region }}"
       syncPolicy:
         automated:
           prune: true
@@ -108,9 +109,10 @@ spec:
           - path: "manifests/overlays/dev/*"
         values:
           environment: "{{ index .path.segments 2 }}"
+          region: "{{ .path.basename }}"
   template:
     metadata:
-      name: vault-{{ .values.environment }}-{{ .path.basename }}
+      name: vault-{{ .values.environment }}-{{ .values.region }}
       namespace: argocd
     spec:
       project: default
@@ -126,7 +128,7 @@ spec:
           ref: values
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: "gen-algo-{{ .values.environment }}-{{ values.region }}"
+        namespace: "gen-algo-{{ .values.environment }}-{{ .values.region }}"
       syncPolicy:
         automated:
           prune: true
