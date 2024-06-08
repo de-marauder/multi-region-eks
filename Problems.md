@@ -112,3 +112,43 @@
      jqPathExpressions:
      - .webhooks[]?.clientConfig.caBundle
      ```
+
+5. **Consul server not starting on EKS**:
+   When using EKS or any other cloud based kubernetes offering, the cluster may not provision persistent volumes automatically because it does not have permissions to do so. (This problem does not exist on local clusters like minikube)
+   
+   **Solution:** You need to specify the `storageClass` for the persistent volume consul will be using. 
+   ```yaml
+    # Consul helm values file
+    server:
+      enabled: true
+      storageClass: gp2
+   ```
+   For EKS, it will be either `gp2` or `gp3` (as at the time of writing this) as opposed to the default `null` value which would require manual provisioning of the persistentVolumes required. You'll also need to setup EKS to be able to provision EBS storage drivers since the persitent storage will be using EBS.
+   ```yaml
+   # Associate an OpenID Connect provider for authentication
+   eksctl utils associate-iam-oidc-provider \
+    --region=us-east-1 \
+    --cluster=cluster-1 \
+    --approve
+  
+   # Create a service account with a role that allows the cluster to provision EBS volumes
+   eksctl create iamserviceaccount \
+    --region us-east-2 \
+    --name ebs-csi-controller-sa \
+    --namespace kube-system \
+    --cluster cluster-1 \
+    --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+    --approve \
+    --role-only \
+    --role-name AmazonEKS_EBS_CSI_DriverRole
+
+   # Add the EBS container storage driver to the cluster
+   eksctl create addon --name aws-ebs-csi-driver \
+    --cluster cluster-1 \
+    --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity \
+    --query Account \
+    --output text):role/AmazonEKS_EBS_CSI_DriverRole \
+    --force \
+    --region us-east-1
+   ```
+   Otherwise, you'll have to manually configure the persistentVolume on your clusters.

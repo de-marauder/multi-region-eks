@@ -10,9 +10,9 @@ This project demonstrates how to perform multi-region deployment of kubernetes u
 - [x] Create a terraform module that encapsulates the infrastructure requirements.
   - [x] Make use of an appropriate data structure to allow for region specific modification of the deployment.
   - [x] Make use of terragrunt to organize terraform modules deployments
-- [ ] Create relevant kubernetes manifests
-  - [ ] For Argo CD control plane
-  - [ ] For deployed infrastructure
-- [ ] Make use of a centralized push based architecture for ArogoCD GitOps deployment.
-- [ ] Showcase how secrets/credentials should be handled
+- [X] Create relevant kubernetes manifests
+  - [X] For Argo CD control plane
+  - [X] For deployed infrastructure
+- [X] Make use of a centralized push based architecture for ArogoCD GitOps deployment.
+- [X] Showcase how secrets/credentials should be handled
 - [ ] Showcase how databases should be handled
