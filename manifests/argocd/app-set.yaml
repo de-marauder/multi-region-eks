@@ -12,14 +12,31 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-    - git:
-        repoURL: https://github.com/de-marauder/multi-region-eks.git
-        revision: HEAD
-        directories:
-          - path: "manifests/overlays/dev/*"
-        values:
-          environment: "{{ index .path.segments 2 }}"
-          region: "{{ .path.basename }}"
+    - merge:
+        mergeKeys:
+          - values.region
+        generators:
+          # - clusters:
+          #     values:
+          #       clusterName: "{{ .name }}"
+          #       server: "{{ .server }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              files:
+                - path: "manifests/overlays/**/config.json"
+              values:
+                clusterName: "{{ .cluster.name }}"
+                server: "{{ .cluster.server }}"
+                region: "{{ .cluster.region }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              directories:
+                - path: "manifests/overlays/*"
+              values:
+                environment: "{{ index .path.segments 2 }}"
+                region: "{{ .path.basename }}"
   template:
     metadata:
       name: gen-algo-{{ .values.environment }}-{{ .values.region }}
@@ -41,7 +58,6 @@ spec:
           - CreateNamespace=true
 
 ---
-
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -54,14 +70,31 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-    - git:
-        repoURL: https://github.com/de-marauder/multi-region-eks.git
-        revision: HEAD
-        directories:
-          - path: "manifests/overlays/dev/*"
-        values:
-          environment: "{{ index .path.segments 2 }}"
-          region: "{{ .path.basename }}"
+    - merge:
+        mergeKeys:
+          - values.region
+        generators:
+          # - clusters:
+          #     values:
+          #       clusterName: "{{ .name }}"
+          #       server: "{{ .server }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              files:
+                - path: "manifests/overlays/**/config.json"
+              values:
+                clusterName: "{{ .cluster.name }}"
+                server: "{{ .cluster.server }}"
+                region: "{{ .cluster.region }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              directories:
+                - path: "manifests/overlays/*"
+              values:
+                environment: "{{ index .path.segments 2 }}"
+                region: "{{ .path.basename }}"
   template:
     metadata:
       name: consul-{{ .values.environment }}-{{ .values.region }}
@@ -89,7 +122,6 @@ spec:
           - CreateNamespace=true
 
 ---
-
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -102,14 +134,31 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-    - git:
-        repoURL: https://github.com/de-marauder/multi-region-eks.git
-        revision: HEAD
-        directories:
-          - path: "manifests/overlays/dev/*"
-        values:
-          environment: "{{ index .path.segments 2 }}"
-          region: "{{ .path.basename }}"
+    - merge:
+        mergeKeys:
+          - values.region
+        generators:
+          # - clusters:
+          #     values:
+          #       clusterName: "{{ .name }}"
+          #       server: "{{ .server }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              files:
+                - path: "manifests/overlays/**/config.json"
+              values:
+                clusterName: "{{ .cluster.name }}"
+                server: "{{ .cluster.server }}"
+                region: "{{ .cluster.region }}"
+          - git:
+              repoURL: https://github.com/de-marauder/multi-region-eks.git
+              revision: HEAD
+              directories:
+                - path: "manifests/overlays/*"
+              values:
+                environment: "{{ index .path.segments 2 }}"
+                region: "{{ .path.basename }}"
   template:
     metadata:
       name: vault-{{ .values.environment }}-{{ .values.region }}
