@@ -1,5 +1,5 @@
 global:
-  datacenter: gen-algo
+  datacenter: gen-algo-dc
 client:
   enabled: true
 server:
