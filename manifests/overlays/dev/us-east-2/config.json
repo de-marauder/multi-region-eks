@@ -1,0 +1,7 @@
+{
+  "cluster": {
+    "name": "de-marauder@cluster-2.us-east-2.eksctl.io",
+    "region": "us-east-2",
+    "server": "https://5A6D976DEA72E42E58139335CCEB20B8.gr7.us-east-2.eks.amazonaws.com"
+  }
+}
