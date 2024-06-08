@@ -1,11 +1,7 @@
 global:
-  datacenter: gen-algo-dc
+  datacenter: gen-algo
 client:
   enabled: true
-  extraConfig: |
-    {
-      "node_name": "{{ replace (env "HOSTNAME") "." "-" }}",
-    }
 server:
   replicas: 1
   storageClass: gp2
