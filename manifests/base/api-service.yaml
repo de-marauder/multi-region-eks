@@ -6,10 +6,9 @@ metadata:
   labels:
     app: gen-algo-api
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gen-algo-api
   ports:
     - port: 8000
       targetPort: 8000
-      nodePort: 30010
