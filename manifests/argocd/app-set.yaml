@@ -142,3 +142,54 @@ spec:
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ingress-controller
+  namespace: argocd
+  # Add for cascading deletions (delete app deletes all resources in it)
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/de-marauder/multi-region-eks.git
+        revision: HEAD
+        files:
+          - path: "manifests/overlays/**/config.json"
+        values:
+          clusterName: "{{ .cluster.name }}"
+          server: "{{ .cluster.server }}"
+          region: "{{ .cluster.region }}"
+          environment: "{{ index .path.segments 2 }}"
+
+  template:
+    metadata:
+      name: ingress-controller-{{ .values.environment }}-{{ .values.region }}
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        - repoURL: "https://kubernetes.github.io/ingress-nginx"
+          chart: ingress-nginx
+          targetRevision: 1.10.1
+          helm:
+            parameters:
+              - name: controller.ingressClassResource.name
+                value: nginx
+        - repoURL: "https://github.com/de-marauder/multi-region-eks"
+          targetRevision: HEAD
+          ref: values
+      destination:
+        server: "{{ .values.server}}"
+        namespace: "gen-algo-{{ .values.environment }}-{{ .values.region }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

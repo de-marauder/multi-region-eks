@@ -152,3 +152,20 @@
     --region us-east-1
    ```
    Otherwise, you'll have to manually configure the persistentVolume on your clusters.
+
+6. **EKS deployments unaccessible:** 
+   The EKS configuration has all it's node groups in private subnets (locked out from the internet for security purposes) so services are not accesible via NodePort
+   **Solution:** Make use of an `Ingress` to expose your internal services using an external load balancer. You'll have to get an Ingress conttroller first though (nginx or traefik or other).
+
+7. **ArgoCD keeps redirecting to HTTPS**:
+   ArgoCD keeps sending back redirect messages to HTTPS when it's accessed via HTTP causing a loop.
+   ```bash
+   curl http://<ingress-load-balancer-dns>/argocd
+
+   # result
+   <a href="https://<ingress-load-balancer-dns>/">Temporary Redirect</a>.
+   ```
+   This also happens with `kubectl port-forward`
+   
+   **Solution:** You'll have to edit the  argocd-server` deployment configuration to start in insecure mode. This is only a problem if you don't have a domain name and SSL certificate to attach to the Ingress definition for the argocd-server.
+   https://github.com/argoproj/argo-cd/issues/2953#issuecomment-643042447
