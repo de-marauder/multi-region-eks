@@ -169,7 +169,7 @@ spec:
 
   template:
     metadata:
-      name: ingress-controller-{{ .values.environment }}-{{ .values.region }}
+      name: ing-ctrl-{{ .values.environment }}-{{ .values.region }}
       namespace: argocd
     spec:
       project: default
