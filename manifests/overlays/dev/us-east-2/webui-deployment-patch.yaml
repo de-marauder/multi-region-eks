@@ -15,5 +15,5 @@ spec:
           image: demarauder/gen-algo-webui:latest-main
           resources:
             limits:
-              memory: "150Mi"
-              cpu: "250m"
+              memory: "128Mi"
+              cpu: "500m"
