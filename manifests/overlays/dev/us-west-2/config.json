@@ -1,0 +1,7 @@
+{
+  "cluster": {
+    "name": "arn:aws:eks:us-west-2:037432857948:cluster/edge-cluster-us-west-2",
+    "region": "us-east-2",
+    "server": "https://FA61F2718A7D09AAAD204FE10965ADCD.gr7.us-west-2.eks.amazonaws.com"
+  }
+}
