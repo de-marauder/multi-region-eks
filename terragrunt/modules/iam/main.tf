@@ -12,6 +12,7 @@ resource "aws_iam_role" "eks_cluster_role" {
           # // You can add iam user arns to attach roles to them
           # // This will allow them to assume this role
           # # "AWS" : "arn:aws:iam::xxxxxxxxx:user/xxxxxxxxx"
+          "AWS" : "${var.principal}"
         },
         "Action" : "sts:AssumeRole"
       }

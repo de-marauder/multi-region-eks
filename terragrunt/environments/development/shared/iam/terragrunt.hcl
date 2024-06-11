@@ -12,6 +12,18 @@ locals {
 
 terraform {
   source = "${get_parent_terragrunt_dir()}/modules//iam"
+
+  extra_arguments "secrets" {
+    commands = [
+      "apply",
+      "plan",
+      "destroy"
+    ]
+
+    arguments = [
+      "-var-file=${get_original_terragrunt_dir()}/secrets.tfvars"
+    ]
+  }
 }
 
 inputs = {

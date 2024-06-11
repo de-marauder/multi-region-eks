@@ -72,3 +72,21 @@ variable "bastion_instance_type" {
   type    = string
   default = "t2.medium"
 }
+
+variable "AWS_ACCESS_KEY" {
+  type = string
+}
+
+variable "AWS_SECRET_ACCESS_KEY" {
+  type = string
+}
+
+variable "argo_manifest_repo" {
+  type = string
+  default = "https://github.com/de-marauder/multi-region-eks.git"
+}
+
+variable "argo_manifest_repo_argocd_path" {
+  type = string
+  default = "manifests/argocd"
+}

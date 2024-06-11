@@ -37,7 +37,9 @@ inputs = {
   managed_worker_node_types     = ["t2.medium"]
   managed_worker_node_count     = 1
   managed_worker_node_min_count = 1
-  managed_worker_node_max_count = 2
+  managed_worker_node_max_count = 3
+
+  ebs_addon_present = true
 
   cluster_name = "edge-cluster-${local.region}"
   iam_role_arn = "${dependency.iam.outputs.cluster_role_arn}"
