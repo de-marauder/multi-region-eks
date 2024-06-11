@@ -9,4 +9,16 @@ include "env" {
 
 terraform {
   source = "${include.env.locals.source_base_url}"
+
+  extra_arguments "secrets" {
+    commands = [
+      "apply",
+      "plan",
+      "destroy"
+    ]
+
+    arguments = [
+      "-var-file=${get_original_terragrunt_dir()}/secrets.tfvars"
+    ]
+  }
 }

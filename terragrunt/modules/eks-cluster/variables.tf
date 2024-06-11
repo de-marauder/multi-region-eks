@@ -94,6 +94,11 @@ variable "self_managed_worker_node_max_count" {
   default = 1
 }
 
+variable "ebs_addon_present" {
+  type = bool
+  default = false
+}
+
 variable "bastion_security_group_ids" {
   type    = list(string)
   default = []

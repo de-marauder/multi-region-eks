@@ -1,6 +1,9 @@
 module "gitops-control-plane" {
   source = "../eks-cluster"
 
+  ebs_addon_present = false
+  # cluster_public = true
+
   region = var.region
 
   vpc_cidr             = var.vpc_cidr

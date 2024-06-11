@@ -47,7 +47,7 @@
       ```
       These policies must be attached singly to the principal (user or role) to be able to access the associated functionalities.
 
-      For basic access, `AmazonEKSAdminPolicy` is required. With this you can authenticate but can't list EKS resources ("nodes", "pods", ...etc)
+      For basic access, `AmazonEKSAdminPolicy` is required. With this you can authenticate but can't list some EKS resources like nodes
 
       >**Solution:** Create an IAM role and add the relevant users as Principals in its trust policy.
       ```
@@ -169,3 +169,12 @@
    
    **Solution:** You'll have to edit the  argocd-server` deployment configuration to start in insecure mode. This is only a problem if you don't have a domain name and SSL certificate to attach to the Ingress definition for the argocd-server.
    https://github.com/argoproj/argo-cd/issues/2953#issuecomment-643042447
+   ```yaml
+   ---
+   # add --insecure as an argument for the server pod specification
+    spec:
+      containers:
+      - command:
+        - argocd-server
+        - --insecure
+   ```

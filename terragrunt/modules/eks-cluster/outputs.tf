@@ -52,3 +52,7 @@ output "private_route_table_ids" {
 output "public_route_table_ids" {
   value = module.vpc.public_route_table_ids
 }
+
+output "oidc_provider" {
+  value = module.eks.oidc_provider
+}

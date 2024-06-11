@@ -7,6 +7,7 @@ module "vpc" {
 
   name = "${var.cluster_name}-vpc"
   cidr = var.vpc_cidr
+  map_public_ip_on_launch = var.cluster_public
 
   azs             = slice(data.aws_availability_zones.available.names, 0, local.az_length) // 3 azs per vpc
   private_subnets = var.private_subnet_cidrs

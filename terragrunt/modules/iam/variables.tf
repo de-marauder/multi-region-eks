@@ -5,3 +5,8 @@ variable "project_name" {
 variable "env" {
   type = string
 }
+
+variable "principal" {
+  type = string
+  default = ""
+}

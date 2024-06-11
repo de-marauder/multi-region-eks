@@ -77,6 +77,8 @@ resource "aws_instance" "bastion_instance" {
   user_data = <<EOF
 #!/bin/bash
 
+set -e
+
 # Install Dependencies
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl unzip
@@ -101,8 +103,55 @@ sudo ./aws/install
 # Print the kubectl version for reference
 echo "kubectl version: $(kubectl version)"
 
-EOF
+# Install Helm
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm -y
 
+# Install argocd binary
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
+
+# Configure AWS credentials
+su ubuntu -c '
+mkdir -p ~/.aws
+echo "
+[default]
+aws_access_key_id = "${var.AWS_ACCESS_KEY}"
+aws_secret_access_key = "${var.AWS_SECRET_ACCESS_KEY}"
+" > ~/.aws/credentials
+
+# Create Kubeconfig file for gitops (argo) cluster
+aws eks update-kubeconfig --name ${local.cluster_name} --region ${var.region} --role-arn ${var.iam_role_arn}
+
+# Install ingress controller
+kubectl create namespace ingress-nginx
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx  \
+  --namespace ingress-nginx \
+  --set controller.ingressClassResource.name=nginx
+
+# Install ArgoCD
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
+
+# Setup ArgoCD apps
+mkdir ~/github
+cd ~/github
+
+git clone ${var.argo_manifest_repo} argo_repo
+kubectl apply -f ~/github/argo_repo/${var.argo_manifest_repo_argocd_path}/app-set.yaml
+kubectl apply -f ~/github/argo_repo/${var.argo_manifest_repo_argocd_path}/ingress.yaml
+'
+EOF
 
   tags = merge(
     {

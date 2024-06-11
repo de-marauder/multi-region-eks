@@ -20,7 +20,7 @@ module "eks" {
   }
 
   vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = var.cluster_public ? module.vpc.public_subnets : module.vpc.private_subnets // cluster should be private
+  subnet_ids               = var.cluster_public ? module.vpc.public_subnets : module.vpc.private_subnets // cluster is private by default
   control_plane_subnet_ids = module.vpc.intra_subnets
   cluster_additional_security_group_ids = [
     "${aws_security_group.remote_access.id}"
@@ -43,7 +43,6 @@ module "eks" {
       instance_types = "${var.self_managed_worker_node_types}"
       capacity_type  = "ON_DEMAND"
 
-      # Remote access cannot be specified with a launch template
       remote_access = {
         ec2_ssh_key               = "${module.key_pair.key_pair_name}"
         source_security_group_ids = ["${aws_security_group.remote_access.id}"]
@@ -74,8 +73,14 @@ module "eks" {
       principal_arn     = "${var.iam_role_arn}"
 
       policy_associations = {
-        example = {
+        eks_admin = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+        eks_cluster_admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
             type = "cluster"
           }
@@ -112,4 +117,19 @@ resource "local_file" "ssh_public_key" {
   filename   = "../../${var.cluster_name}.pub" # Replace with the desired path and filename
   content    = module.key_pair.public_key_openssh
   depends_on = [module.key_pair] # Ensure that the public key is generated before writing to the file
+}
+
+module "eks_ebs_volume_addon" {
+  # Create a ebs volume addon conditionally
+  count = var.ebs_addon_present ? 1 : 0
+
+  source = "../eks-ebs-addon"
+
+  cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
+  cluster_oidc_issuer = module.eks.oidc_provider
+  cluster_name = var.cluster_name
+
+  depends_on = [ 
+    module.eks
+   ]
 }
