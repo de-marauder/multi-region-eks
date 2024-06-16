@@ -10,7 +10,7 @@ This setup aimed to show how a multi region deployment can be structured using b
 The project is structured like so:
 
 ```
-../terragrunt/
+terragrunt/
 ├── environments
 │   ├── development
 │   │   ├── env.hcl
@@ -33,8 +33,10 @@ The project is structured like so:
 │   │   │           └── terragrunt.hcl
 │   │   └── shared
 │   │       ├── gitops-cluster
+│   │       │   ├── secrets.tfvars
 │   │       │   └── terragrunt.hcl
 │   │       └── iam
+│   │           ├── secrets.tfvars
 │   │           └── terragrunt.hcl
 │   ├── _env
 │   │   ├── edge-cluster.hcl
@@ -50,6 +52,9 @@ The project is structured like so:
 │   │   ├── sg.tf
 │   │   ├── variables.tf
 │   │   └── vpc.tf
+│   ├── eks-ebs-addon
+│   │   ├── main.tf
+│   │   └── vars.tf
 │   ├── gitops-cluster
 │   │   ├── bastion.tf
 │   │   ├── locals.tf
@@ -79,7 +84,7 @@ EKS clusters are deployed to edge regions (in this case 2 but can be scaled up).
 
 Connections between VPCs across regions are handled with VPC peer connections. The network topolopgy is a hub and spoke pattern where the gitops cluster VPC serves as a hub and the egde clusters are the spoke. The edge clusters each serve their own traffic however, and only rely on the gitops cluster for updates.
 
-//TODO: Include an image showing the architecture topology
+<img src="../assets/infra.png">
 
 Since the deployment is done in a private network for security reasons, a bastion is provisioned for access. This bastion comes with the gitops cluster module and can access all edge clusters due to the VPC peer connections
 
